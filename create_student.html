@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+<body>
+<div id="result"></div>
+<h2>Create student</h2>
+<p>Name: </p>
+<input type="text" id="nameStudent"/>
+<p style="color: red" id="errorName"></p>
+<p>Point: </p>
+<input type="number" id="point"/>
+<br>
+<p>Gender: </p>
+<input type="text" id="gender"/>
+<input type="button" id="buttonClick" value="Create new"/>
+</body>
+<script>
+    $(document).ready(function () {
+        $('#buttonClick').click(function (event) {
+            //let name = $('#id').val;
+            let name = document.getElementById("nameStudent").value;
+            let point = document.getElementById("point").value * 1;
+            let gender = document.getElementById("gender").value * 1;
+            let json = {
+                "nameStudent": name,
+                "point": point,
+                "gender": gender
+            }
+            $.ajax({
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                type: "POST",
+                url: 'http://localhost:8080/api/student',
+                data: JSON.stringify(json),
+                //Tự động thực thi khi response trả về HTTP status là 2xx
+                success: function (evt) {
+                    console.log(evt);
+                    document.getElementById("result").innerHTML = "Thêm mới thành công";
+                },
+                //Http status là 4xx, 5xx
+                error: function (evt) {
+                    console.log(evt);
+                    if(evt.status == 400) {
+                        document.getElementById("result").innerHTML = "Thêm mới thất bại vì lỗi validate" ;
+                        document.getElementById("errorName").innerText= evt.responseJSON.nameStudent;
+                    }
+
+                }
+            })
+        })
+    })
+</script>
+</html>
